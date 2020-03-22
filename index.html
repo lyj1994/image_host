@@ -13,6 +13,8 @@
   </body>
   <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.js"></script>
   <script>
+    var inputEle = document.getElementById("url");
+
     function copyURL() {
       var inputEle = document.getElementById("url");
       var textarea = document.createElement("textarea");
@@ -64,7 +66,8 @@
             }),
             success: function(res) {
               var content = (res && res.content) || {};
-              var downloadURL = content.downloadURL;
+              var downloadURL = content.download_url;
+              inputEle.value = downloadURL;
             }
           });
         };
