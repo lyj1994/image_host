@@ -1,1 +1,74 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>上传图片</title>
+  </head>
+  <body>
+    <label for="img"><input name="img" type="file"/></label>
+    <br />
+    <button onclick="copyURL()">点击复制</button
+    ><input id="url" name="url" disabled style="width: 400px" />
+  </body>
+  <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.js"></script>
+  <script>
+    function copyURL() {
+      var inputEle = document.getElementById("url");
+      var textarea = document.createElement("textarea");
+      textarea.value = inputEle.value;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+    var token = "ec3205f36a7af9a1b109" + "" + "8a8493f0b76f4b50e7e4";
+
+    var uuid = function() {
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(
+        c
+      ) {
+        var r = (Math.random() * 16) | 0,
+          v = c == "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      });
+    };
+    var imgEle = document.querySelector("input");
+    imgEle.onchange = function(event) {
+      var files = event.target.files;
+
+      if (files && files.length > 0) {
+        var img = files[0];
+        var isImg = img.type.indexOf("image") === 0;
+        console.log(img, isImg);
+        var reader = new FileReader();
+        reader.readAsDataURL(img);
+        reader.onload = function(e) {
+          console.log(e.target.value);
+          $.ajax({
+            url: `https://api.github.com/repos/lyj1994/image_host/contents/${uuid()}.${img.type.substr(
+              6
+            )}`,
+            method: "PUT",
+            headers: {
+              Authorization: `token ${token}`
+            },
+            contentType: `application/json; charset=UTF-8`,
+            // dataType: "json",
+            data: JSON.stringify({
+              message: `upload image @ ${Date.now()}`,
+              content: String(e.target.result).replace(
+                /^data:image\/(png|jpg|jpeg|gif);base64,/,
+                ""
+              )
+            }),
+            success: function(res) {
+              var content = (res && res.content) || {};
+              var downloadURL = content.downloadURL;
+            }
+          });
+        };
+      }
+    };
+  </script>
+</html>
