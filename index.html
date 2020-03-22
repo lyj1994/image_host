@@ -42,11 +42,9 @@
       if (files && files.length > 0) {
         var img = files[0];
         var isImg = img.type.indexOf("image") === 0;
-        console.log(img, isImg);
         var reader = new FileReader();
         reader.readAsDataURL(img);
         reader.onload = function(e) {
-          console.log(e.target.value);
           $.ajax({
             url: `https://api.github.com/repos/lyj1994/image_host/contents/${uuid()}.${img.type.substr(
               6
